@@ -6,7 +6,7 @@ class DBHelper:
     def __init__(self):
         self.host = "127.0.0.1"
         self.user = "postgres"
-        self.password = "cpe231"
+        self.password = "admin123"
         self.db = "cpe231"
 
     def __connect__(self):
