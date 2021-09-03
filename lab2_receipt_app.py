@@ -170,7 +170,7 @@ def main():
         #Test receipt functions
         receipts = Receipt()
         #Create receipt
-        create_receipt(receipts, "RCT1001/20", '2020-02-04', 'CP', 'DC', 'Debit Card', 10000, 'Paid all invoices partially',
+        '''create_receipt(receipts, "RCT1001/20", '2020-02-04', 'CP', 'DC', 'Debit Card', 10000, 'Paid all invoices partially',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 100}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 200}])
         create_receipt(receipts, "RCT1002/20", '2020-02-05', 'Sam', 'CC', 'Master Card, Citibank', 15000,'Partially paid on INT101/20',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 8560}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 1440}])
@@ -182,7 +182,7 @@ def main():
                        [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 8560},
                         {"Item No": 2, "Invoice No": "INT101/21", "Amount Paid Here": 900}])
         create_receipt(receipts, "RCT1003/21", "2021-01-06", "Sam", "CC", "Master Card,Citybank", 10000, "Partially paid on IN101/21",
-                       [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 300}])
+                       [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 300}])'''
         print("")
         report_list_all_receipts()
         waitKeyPress("Results of creating 3 receipts: RCT1001/20, RCT1002/20, and RCT1003/20")
