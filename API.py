@@ -358,15 +358,11 @@ def report_list_all_receipts(receipts, invoices, customers):
     # A helper function such as def print_tabular_dictionary(tabularDictionary) can then be called to print this in a tabular (table-like) form with column headings and data. 
 
     db = DBHelper()
-    data, columns = db.fetch ('SELECT i.invoice_no as "Invoice No", i.date as "Date" '
-                              ' , i.customer_code as "Customer Code", c.name as "Customer Name" '
-                              ' , i.due_date as "Due Date", i.total as "Total", i.vat as "VAT", i.amount_due as "Amount Due" '
-                              ' , ili.product_code as "Product Code", p.name as "Product Name" '
-                              ' , ili.quantity as "Quantity", ili.unit_price as "Unit Price", ili.product_total as "Extended Price" '
-                              ' FROM invoice i JOIN customer c ON i.customer_code = c.customer_code '
-                              '  JOIN invoice_line_item ili ON i.invoice_no = ili.invoice_no '
-                              '  JOIN product p ON ili.product_code = p.code '
-                              ' ')
+    data, columns = db.fetch ('SELECT rli.invoice_no as "Invoice No" rli.invoice_date as "Invoice Date" '
+                              ' , rli.invoice_full_amount as "Invoice Full Amount" rli.invoice_amount_remain as "Invoice Amount Remain" '
+                              ' , r.receipt_no as "Receipt No" rli.receipt_no as "Receipt No"'
+                              ' , rli.invoice_amount_paid_here as "Invoice Amount Paid Here" r.total_receipt as "Total Receipt" '
+                              ' FROM receipt_line_item rli JOIN receipt r ON r.receipt_no =  rli.receipt_no ')
     #print (result)
     result = row_as_dict(data, columns)
     printDictInCSVFormat(result, ('Invoice No',), ('Invoice Date', 'Invoice Full Amount', 'Amount Paid Here'))
