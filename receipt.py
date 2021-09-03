@@ -20,7 +20,7 @@ class Receipt:
         self.db.execute ("DELETE FROM receipt_line_item WHERE receipt_no = '{}' ".format(receiptNo))
         for lineItem in receiptLineTuplesList:
             self.db.execute ("INSERT INTO receipt_line_item (receipt_no, item_no, invoice_no, amount_paid_here) VALUES ('{}',{},'{}','{}')".format(receiptNo, lineItem['Item No'], lineItem['Invoice No'], lineItem['Amount Paid Here']))
-        self.__updateInvoiceTotal(receiptNo)
+        self.__updateReceiptTotal(receiptNo)
 
     def create(self, receiptNo, receiptDate, customerCode, paymentMethod, paymentReference, totalReceived ,remarks, receiptLineTuplesList):
         # Adds the new invoice record to invoices object (dictionary).
@@ -35,6 +35,13 @@ class Receipt:
         data, columns = self.db.fetch ("SELECT * FROM receipt WHERE receipt_no = '{}' ".format(receiptNo))
         if len(data) > 0:
             return {'Is Error': True, 'Error Message': "Receipt No '{}' already exists. Cannot Create. ".format(receiptNo)}
+        else:
+            self.db.execute ("INSERT INTO receipt (receipt_no, date, customer_code, payment_method, payment_reference, total_receipt, remarks) VALUES ('{}' ,'{}','{}','{}','{}','{}','{}')".format(receiptNo, receiptDate, customerCode, paymentMethod, paymentReference, totalReceived ,remarks))
+            self.__updateLineItem(receiptNo, receiptLineTuplesList)
+
+        return {'Is Error': False, 'Error Message': ""}
+
+
 
 
     def read(self, receiptNo):
@@ -54,7 +61,7 @@ class Receipt:
         # Returns dictionary {‘Is Error’: ___, ‘Error Message’: _____}.
         data, columns = self.db.fetch ("SELECT * FROM receipt WHERE receipt_no = '{}' ".format(receiptNo))
         if len(data) > 0:
-            self.db.execute ("UPDATE receipt SET date = {}, customer_code = '{}', payment_metod={} WHERE receipt_no = '{}' ".format(newReceiptDate,newCustomerCode,newPaymentMethod,receiptNo))
+            self.db.execute ("UPDATE receipt SET date = {}, customer_code = '{}', payment_metod={},payment_reference = '{}', total_receipt = '{}', remarks = '{}'  WHERE receipt_no = '{}' ".format(newReceiptDate, newCustomerCode, newPaymentMethod, newPaymentReference, newTotalReceived, newRemarks, newReceiptlineTuplelist,receiptNo))
             self.__updateLineItem(receiptNo, newReceiptlineTuplelist)
         else:
             return {'Is Error': True, 'Error Message': "Invoice No '{}' not found. Cannot Update.".format(receiptNo)}

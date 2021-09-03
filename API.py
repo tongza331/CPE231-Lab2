@@ -283,8 +283,8 @@ def report_list_payment_method(payments):
 
 
 # function about Receipt
-def create_receipt(receipts, receiptNo, receiptDate, customerCode, paymentMethod, paymentReference, totalReceived, remark, receiptLineTuplesList):
-    result = receipts.create(receiptNo, receiptDate, customerCode, paymentMethod, paymentReference,totalReceived, remark, receiptLineTuplesList)  # returns error dictionary
+def create_receipt(receipts, receiptNo, receiptDate, customerCode, paymentMethod, paymentReference, totalReceived, remarks, receiptLineTuplesList):
+    result = receipts.create(receiptNo, receiptDate, customerCode, paymentMethod, paymentReference,totalReceived, remarks, receiptLineTuplesList)  # returns error dictionary
     if result['Is Error']: #if error
         print(result['Error Message'])
     else:
@@ -292,24 +292,25 @@ def create_receipt(receipts, receiptNo, receiptDate, customerCode, paymentMethod
     return result #send result for caller program to use
 
 
-def read_receipt(invoices, invoiceNo):
-    result = invoices.read(invoiceNo) #returns tuple of (error dict, data dict)
+
+def read_receipt(receipts, receiptNo):
+    result = receipts.read(receiptNo) #returns tuple of (error dict, data dict)
     if result[0]['Is Error']: #in case error
         print(result[0]['Error Message'])
     else:
         print(result[1])
     return result #send result for caller program to use
 
-def update_receipt(invoices, invoiceNo, newInvoiceDate, newCustomerCode, newDueDate, newInvoiceLineTuplesList):
-    if newInvoiceDate == None:
-        newInvoiceDate = 'null'
+def update_receipt(receipts, receiptNo, newReceiptDate, newPayment, newPaymentRef, newTootal_receipt, newRemarksnew, ReceiptLineTuplesList):
+    if newReceiptDate == None:
+        newReceiptDate = 'null'
     else:
-        newInvoiceDate = "'" + newInvoiceDate + "'"
-    if newDueDate == None:
-        newDueDate = 'null'
+        newReceiptDate = "'" + newReceiptDate + "'"
+    if newReceiptDate == None:
+        newReceiptDate = 'null'
     else:
-        newDueDate = "'" + newDueDate + "'"
-    result = invoices.update(invoiceNo, newInvoiceDate, newCustomerCode, newDueDate, newInvoiceLineTuplesList) #returns error dictionary
+        newReceiptDate = "'" + newReceiptDate + "'"
+    result = receipts.update(receiptNo, receiptNo, newReceiptDate, newPayment, newPaymentRef, newTootal_receipt,newRemarksnew,ReceiptLineTuplesList) #returns error dictionary
     if result['Is Error']: #if error
         print(result['Error Message'])
     else:
@@ -340,21 +341,21 @@ def delete_receipt_line(receipts, receiptNo, itemNo):
         print('Invoice Line Item Delete Success.')
     return result #send result for caller program to use
 
-def report_list_all_receipts(receipts, invoices, customers):
+def report_list_all_receipts():
     # Will dump all invoices data and return 1 dictionary as a result (with header and line item joined).  
     # Please show the customer name and product name also. 
     # A helper function such as def print_tabular_dictionary(tabularDictionary) can then be called to print this in a tabular (table-like) form with column headings and data. 
 
     db = DBHelper()
-    data, columns = db.fetch ('SELECT rli.invoice_no as "Invoice No" rli.invoice_date as "Invoice Date" '
-                              ' , rli.invoice_full_amount as "Invoice Full Amount" rli.invoice_amount_remain as "Invoice Amount Remain" '
-                              ' , r.receipt_no as "Receipt No" rli.receipt_no as "Receipt No"'
-                              ' , rli.invoice_amount_paid_here as "Invoice Amount Paid Here" r.total_receipt as "Total Receipt" '
-                              ' FROM receipt_line_item rli JOIN receipt r ON r.receipt_no =  rli.receipt_no ')
+    data, columns = db.fetch ('SELECT rli.invoice_no as "Invoice No", rli.invoice_date as "Invoice Date" '
+                              ' , rli.invoice_full_amount as "Invoice Full Amount", rli.invoice_amount_remain as "Invoice Amount Remain" '
+                              ' , r.receipt_no as "Receipt No", rli.receipt_no as "Receipt No"'
+                              ' , rli.invoice_amount_paid_here as "Invoice Amount Paid Here" ,r.total_receipt as "Total Receipt" '
+                              '  FROM receipt r JOIN receipt_line_item r ON r.receipt_no =  rli.receipt_no ')
     #print (result)
     result = row_as_dict(data, columns)
     printDictInCSVFormat(result, ('Invoice No',), ('Invoice Date', 'Invoice Full Amount', 'Amount Paid Here'))
     return result #send result for caller program to use
 
-def report_unpaid_invoices(invoices, customers, receipts):
+def report_unpaid_invoices():
     pass

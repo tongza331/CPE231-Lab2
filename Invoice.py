@@ -87,8 +87,7 @@ class Invoice:
                               ' , ili.quantity as "Quantity", ili.unit_price as "Unit Price", ili.product_total as "Extended Price" '
                               ' FROM invoice i JOIN customer c ON i.customer_code = c.customer_code '
                               '  JOIN invoice_line_item ili ON i.invoice_no = ili.invoice_no '
-                              '  JOIN product p ON ili.product_code = p.code '
-                              ' ')
+                              '  JOIN product p ON ili.product_code = p.code ')
         return row_as_dict(data, columns)
 
     def update_invoice_line(self, invoiceNo, itenNo, productCode, newQuantity, newUnitPrice):

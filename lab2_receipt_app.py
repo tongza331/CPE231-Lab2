@@ -92,6 +92,11 @@ def main():
 
         
         invoices = Invoice()
+        ## ลบที่พี่เอกสร้างตอนแรก
+        #delete_invoice(invoices,'IN100/21')
+        #delete_invoice(invoices,'IN101/21')
+        #delete_invoice(invoices,'IN102/21')
+        ##
         create_invoice(invoices, invoiceNo="INT100/20", invoiceDate="2020-01-02", customerCode="Sam", dueDate=None, invoiceLineTuplesList=[{"Item No": 1, "Product Code": "HD01", "Quantity": 2, "Unit Price": 3000}, {"Item No": 2, "Product Code": "HD02", "Quantity": 1, "Unit Price": 2000}])
         create_invoice(invoices, "INT101/20", "2020-01-04", "CP", None,
                        [{"Item No": 1, "Product Code": "HD02", "Quantity": 1, "Unit Price": 2000}])
@@ -109,7 +114,7 @@ def main():
         read_invoice(invoices, "INT100/21")
         read_invoice(invoices, "INT101/21")
         update_invoice(invoices, invoiceNo="INT100/21", newInvoiceDate="2021-01-02", newCustomerCode="Sam", newDueDate=None,
-                       newInvoiceLineTuplesList=[{"Item No": 1, "Product Code": "HD01", "Quantity": 2, "Unit Price": 3000},
+                       newInvoiceLineTuplesList=[{"Item No": 1, "Product Code": "HD01", "Quantity": 2, "Unit Price": 3000}, # change 300 to 4000 to same expect value
                                                  {"Item No": 2, "Product Code": "HD02", "Quantity": 1, "Unit Price": 2000}])
         report_list_all_invoices(invoices, customers, products)
         waitKeyPress("Results after read, update and delete Invoice")
@@ -170,7 +175,7 @@ def main():
         #Test receipt functions
         receipts = Receipt()
         #Create receipt
-        '''create_receipt(receipts, "RCT1001/20", '2020-02-04', 'CP', 'DC', 'Debit Card', 10000, 'Paid all invoices partially',
+        create_receipt(receipts, "RCT1001/20", '2020-02-04', 'CP', 'DC', 'Debit Card', 10000, 'Paid all invoices partially',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 100}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 200}])
         create_receipt(receipts, "RCT1002/20", '2020-02-05', 'Sam', 'CC', 'Master Card, Citibank', 15000,'Partially paid on INT101/20',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 8560}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 1440}])
@@ -182,9 +187,10 @@ def main():
                        [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 8560},
                         {"Item No": 2, "Invoice No": "INT101/21", "Amount Paid Here": 900}])
         create_receipt(receipts, "RCT1003/21", "2021-01-06", "Sam", "CC", "Master Card,Citybank", 10000, "Partially paid on IN101/21",
-                       [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 300}])'''
+                       [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 300}])
         print("")
-        report_list_all_receipts()
+        
+        #report_list_all_receipts(receipts,invoices,customers)
         waitKeyPress("Results of creating 3 receipts: RCT1001/20, RCT1002/20, and RCT1003/20")
         
         #Read receipt
@@ -199,7 +205,7 @@ def main():
                        [{"Item No": 1, "Invoice No": "INT100/20", "Amount Paid Here": 7000}, {"Item No": 2, "Invoice No": "INT101/20", "Amount Paid Here": 1500}])
         update_receipt(receipts, 'RCT1004/20', '1999-12-31', 'Sam', 'CC', 'Master Card, Citibank', 10000,'Partially paid on INT101/20',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 8560}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 1440}])  # cannot update RCT1004/21
-        report_list_all_receipts()
+        report_list_all_receipts(receipts, invoices, customers)
         waitKeyPress("Results of updating 2 receipts: RCT1002/20 (successfully) and RCT1004/20 (unsuccessfully)")
 
         # update receipt line item
