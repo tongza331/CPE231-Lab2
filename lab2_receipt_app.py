@@ -246,4 +246,8 @@ def main():
         raise # this line can be erased. It is here to raise another error so you can see which line to debug.
     else:
         print("Normal Termination.   Goodbye!")
+
+#this is so that when called externally via a command line, main is executed.
+if __name__ == "__main__":
+    main()
 #main function ends
