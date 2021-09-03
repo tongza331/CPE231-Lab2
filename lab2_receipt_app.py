@@ -175,22 +175,22 @@ def main():
         #Test receipt functions
         receipts = Receipt()
         #Create receipt
-        create_receipt(receipts, "RCT1001/20", '2020-02-04', 'CP', 'DC', 'Debit Card', 10000, 'Paid all invoices partially',
+        create_receipt(receipts, 'RCT1001/20', '2020-02-04', 'CP', 'DC', 'Debit Card', 10000, 'Paid all invoices partially',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 100}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 200}])
-        create_receipt(receipts, "RCT1002/20", '2020-02-05', 'Sam', 'CC', 'Master Card, Citibank', 15000,'Partially paid on INT101/20',
+        create_receipt(receipts, 'RCT1002/20', '2020-02-05', 'Sam', 'CC', 'Master Card, Citibank', 15000,'Partially paid on INT101/20',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 8560}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 1440}])
         create_receipt(receipts,'RCT1003/20','2020-02-06','CP','DC','Debit Card',20000,'This will later be deleted',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 10}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 20}])
-        create_receipt(receipts, "RCT1001/21", "2021-01-04", "CP", "DC", "KBTG card",
+        create_receipt(receipts, 'RCT1001/21', "2021-01-04", "CP", "DC", "KBTG card",
                        9000, "-", [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 600}])
-        create_receipt(receipts, "RCT1002/21", "2021-01-05", "Sam", "CC", "pay ref", 10000, "rmark",
+        create_receipt(receipts, 'RCT1002/21', "2021-01-05", "Sam", "CC", "pay ref", 10000, "rmark",
                        [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 8560},
                         {"Item No": 2, "Invoice No": "INT101/21", "Amount Paid Here": 900}])
         create_receipt(receipts, "RCT1003/21", "2021-01-06", "Sam", "CC", "Master Card,Citybank", 10000, "Partially paid on IN101/21",
                        [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 300}])
         print("")
         
-        #report_list_all_receipts(receipts,invoices,customers)
+        report_list_all_receipts()
         waitKeyPress("Results of creating 3 receipts: RCT1001/20, RCT1002/20, and RCT1003/20")
         
         #Read receipt
@@ -202,10 +202,10 @@ def main():
         
         #Update receipt
         update_receipt(receipts, "RCT1002/20", "2020-02-06", "Sam", "CC", "Master Card,Citybank", 10000, "Partially paid on IN101/20",
-                       [{"Item No": 1, "Invoice No": "INT100/20", "Amount Paid Here": 7000}, {"Item No": 2, "Invoice No": "INT101/20", "Amount Paid Here": 1500}])
+                       [{"Item No": 1, "Invoice No": "INT100/20", "Amount Paid Here": 7000}, {"Item No": 2, "Invoice No": "INT101/20", "Amount Paid Here": 1500}]) # Update success
         update_receipt(receipts, 'RCT1004/20', '1999-12-31', 'Sam', 'CC', 'Master Card, Citibank', 10000,'Partially paid on INT101/20',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 8560}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 1440}])  # cannot update RCT1004/21
-        report_list_all_receipts(receipts, invoices, customers)
+        report_list_all_receipts()
         waitKeyPress("Results of updating 2 receipts: RCT1002/20 (successfully) and RCT1004/20 (unsuccessfully)")
 
         # update receipt line item

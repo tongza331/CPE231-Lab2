@@ -301,7 +301,7 @@ def read_receipt(receipts, receiptNo):
         print(result[1])
     return result #send result for caller program to use
 
-def update_receipt(receipts, receiptNo, newReceiptDate, newPayment, newPaymentRef, newTootal_receipt, newRemarksnew, ReceiptLineTuplesList):
+def update_receipt(receipts, receiptNo, newReceiptDate, newCustomerCode,newPayment, newPaymentRef, newTotal_receipt, newRemarks, ReceiptLineTuplesList):
     if newReceiptDate == None:
         newReceiptDate = 'null'
     else:
@@ -310,11 +310,11 @@ def update_receipt(receipts, receiptNo, newReceiptDate, newPayment, newPaymentRe
         newReceiptDate = 'null'
     else:
         newReceiptDate = "'" + newReceiptDate + "'"
-    result = receipts.update(receiptNo, receiptNo, newReceiptDate, newPayment, newPaymentRef, newTootal_receipt,newRemarksnew,ReceiptLineTuplesList) #returns error dictionary
+    result = receipts.update(receiptNo, newReceiptDate, newCustomerCode, newPayment, newPaymentRef, newTotal_receipt,newRemarks,ReceiptLineTuplesList) #returns error dictionary
     if result['Is Error']: #if error
         print(result['Error Message'])
     else:
-        print('Invoice Update Success.')
+        print('Receipt Update Success.')
     return result #send result for caller program to use
 
 def delete_receipt(receipts, receiptNo):
@@ -322,23 +322,23 @@ def delete_receipt(receipts, receiptNo):
     if result['Is Error']: #if error
         print(result['Error Message'])
     else:
-        print('Invoice Delete Success.')
+        print('Receipt Delete Success.')
     return result #send result for caller program to use
 
-def update_receipt_line(receipts, receiptNo, itemNo, productCode, newQuantity, newUnitPrice):
-    result = receipts.update_invoice_line(receiptNo, itemNo, productCode, newQuantity, newUnitPrice) #returns error dictionary
+def update_receipt_line(receipts, receiptNo,itemNo, newInvocie, newPaidHere):
+    result = receipts.update_receipt_line(receiptNo, itemNo, newInvocie, newPaidHere) #returns error dictionary
     if result['Is Error']: #if error
         print(result['Error Message'])
     else:
-        print('Invoice Line Item Update Success.')
+        print('Receipt Line Item Update Success.')
     return result #send result for caller program to use
 
 def delete_receipt_line(receipts, receiptNo, itemNo):
-    result = receipts.delete_invoice_line(receiptNo, itemNo) #returns error dictionary
+    result = receipts.delete_receipt_line(receiptNo, itemNo) #returns error dictionary
     if result['Is Error']: #if error
         print(result['Error Message'])
     else:
-        print('Invoice Line Item Delete Success.')
+        print('Receipt Line Item Delete Success.')
     return result #send result for caller program to use
 
 def report_list_all_receipts():
@@ -347,15 +347,29 @@ def report_list_all_receipts():
     # A helper function such as def print_tabular_dictionary(tabularDictionary) can then be called to print this in a tabular (table-like) form with column headings and data. 
 
     db = DBHelper()
-    data, columns = db.fetch ('SELECT rli.invoice_no as "Invoice No", rli.invoice_date as "Invoice Date" '
-                              ' , rli.invoice_full_amount as "Invoice Full Amount", rli.invoice_amount_remain as "Invoice Amount Remain" '
-                              ' , r.receipt_no as "Receipt No", rli.receipt_no as "Receipt No"'
-                              ' , rli.invoice_amount_paid_here as "Invoice Amount Paid Here" ,r.total_receipt as "Total Receipt" '
-                              '  FROM receipt r JOIN receipt_line_item r ON r.receipt_no =  rli.receipt_no ')
-    #print (result)
+    data, columns = db.fetch ('SELECT r.receipt_no as "Receipt No" '
+                                ', r.date as "Date" '
+                                ', c.customer_code as "Customer Code"'
+                                ', c.name as "Customer Name"'
+                                ', p.description as "Payment Name"'
+                                ', r.total_receipt as "Total Receipt" '
+                                ', r.payment_reference as "Payment Reference"'
+                                ', r.remarks as "Remarks"'
+                                'FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
+                                ' JOIN customer c ON r.customer_code = c.customer_code'
+                                ' JOIN payment_method p ON r.payment_method = p.payment_method' )
     result = row_as_dict(data, columns)
-    printDictInCSVFormat(result, ('Invoice No',), ('Invoice Date', 'Invoice Full Amount', 'Amount Paid Here'))
-    return result #send result for caller program to use
+    data, columns = db.fetch ('SELECT rli.invoice_no as "Invoice No" '
+                                ', r.date as "Invoice Date" '
+                                ', rli.invoice_full_amount as "Invoice Full Amount" '
+                                ', rli.amount_paid_here as "Amount Paid Here"'
+                                'FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
+                                ' JOIN invoice i ON i.invoice_no = rli.invoice_no')
+    result2 = row_as_dict(data, columns)
+
+    printDictInCSVFormat(result, ('Receipt No',), ('Date', 'Customer Code', 'Customer Name', 'Payment Name', 'Total Receipt', 'Payment Reference', 'Remarks'))
+    printDictInCSVFormat(result2, ('Invoice No',), ('Invoice Date', 'Invoice Full Amount', 'Amount Paid Here'))
+    return result, result2 #send result for caller program to use
 
 def report_unpaid_invoices():
     pass

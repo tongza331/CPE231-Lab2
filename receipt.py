@@ -55,16 +55,16 @@ class Receipt:
             return ({'Is Error': True, 'Error Message': "Receipt No '{}' not found. Cannot Read.".format(receiptNo)},{})
 
         return ({'Is Error': False, 'Error Message': ""},retReceipt)
-# ไม่มั่นใจ
+
     def update(self, receiptNo, newReceiptDate, newCustomerCode, newPaymentMethod, newPaymentReference, newTotalReceived, newRemarks, newReceiptlineTuplelist):
         # Finds the invoice number in invoices object and then changes the values to the new ones. 
         # Returns dictionary {‘Is Error’: ___, ‘Error Message’: _____}.
         data, columns = self.db.fetch ("SELECT * FROM receipt WHERE receipt_no = '{}' ".format(receiptNo))
         if len(data) > 0:
-            self.db.execute ("UPDATE receipt SET date = {}, customer_code = '{}', payment_metod={},payment_reference = '{}', total_receipt = '{}', remarks = '{}'  WHERE receipt_no = '{}' ".format(newReceiptDate, newCustomerCode, newPaymentMethod, newPaymentReference, newTotalReceived, newRemarks, newReceiptlineTuplelist,receiptNo))
+            self.db.execute ("UPDATE receipt SET date = '{}', customer_code = '{}', payment_method='{}',payment_reference = '{}', total_receipt = '{}', remarks = '{}'  WHERE receipt_no = '{}' ".format(newReceiptDate, newCustomerCode, newPaymentMethod, newPaymentReference, newTotalReceived, newRemarks,receiptNo))
             self.__updateLineItem(receiptNo, newReceiptlineTuplelist)
         else:
-            return {'Is Error': True, 'Error Message': "Invoice No '{}' not found. Cannot Update.".format(receiptNo)}
+            return {'Is Error': True, 'Error Message': "Receipt No '{}' not found. Cannot Update.".format(receiptNo)}
 
         return {'Is Error': False, 'Error Message': ""}
 
@@ -78,7 +78,7 @@ class Receipt:
         else:
             return {'Is Error': True, 'Error Message': "Receipt No '{}' not found. Cannot Delete".format(receiptNo)}
         return {'Is Error': False, 'Error Message': ""}
-#ข้ามสักแปป
+
     def dump(self):
         # Will dump all invoice data by returning 1 dictionary as output.
         
@@ -95,30 +95,27 @@ class Receipt:
                               ' ')
         return row_as_dict(data, columns)
 
-    def update_receipt_line(self, receiptNo, itemNo, newInvoiceNo, newAmountPaidHere):
+    def update_receipt_line(self, receiptNo,itemNo, newInvocie, newPaidHere):
         # The line item of this invoice number is updated for this product code.  
         # Note that the Product Total must also be recalculated, 
         #  after which all the related data in the invoice must be updated such as Total, VAT, and Amount Due. 
         # Returns dictionary {‘Is Error’: ___, ‘Error Message’: _____}. 
         data, columns = self.db.fetch ("SELECT * FROM receipt_line_item WHERE receipt_no = '{}' AND item_no = '{}' ".format(receiptNo, itemNo))
         if len(data) > 0:
-            self.db.execute ("UPDATE receipt_line_item SET invoice_no = {}, amount_paid_here = '{}' WHERE receipt_no = '{}' AND item_no = '{}' ".format(newInvoiceNo, newAmountPaidHere,receiptNo, itemNo))
-            self.__updateInvoiceTotal(receiptNo)
+            self.db.execute ("UPDATE receipt_line_item SET invoice_no = '{}', amount_paid_here = '{}' WHERE receipt_no = '{}' AND item_no = '{}' ".format(newInvocie, newPaidHere,receiptNo, itemNo))
+            self.__updateReceiptTotal(receiptNo)
         else:
             return {'Is Error': True, 'Error Message': "Item No '{}' not found in Invoice No '{}'. Cannot Update.".format(itemNo, receiptNo)}
 
         return {'Is Error': False, 'Error Message': ""}
 
     def delete_receipt_line(self, receiptNo, itemNo):
-        # The line item of this invoice number is updated to delete this Item No.  
-        # Note that all the related data in the invoice must be updated such as Total, VAT, and Amount Due. 
-        # Returns dictionary {‘Is Error’: ___, ‘Error Message’: _____}
-        data, columns = self.db.fetch ("SELECT * FROM receipt_line_item WHERE invoice_no = '{}' AND item_no = '{}' ".format(receiptNo, itemNo))
-        if len(data) > 0:
-            self.db.execute ("DELETE FROM receipt_line_item WHERE invoice_no = '{}' AND item_no = '{}' ".format(receiptNo, itemNo))
-            self.__updateInvoiceTotal(receiptNo)
+            data, columns = self.db.fetch ("SELECT * FROM receipt_line_item WHERE receipt_no = '{}' AND item_no = '{}' ".format(receiptNo, itemNo))
+            if len(data) > 0:
+                self.db.execute ("DELETE FROM receipt_line_item WHERE receipt_no = '{}' AND item_no = '{}' ".format(receiptNo, itemNo))
+                self.__updateReceiptTotal(receiptNo)
 
-        else:
-            return {'Is Error': True, 'Error Message': "Item No '{}' not found in Invoice No '{}'. Cannot Delete.".format(itemNo, receiptNo)}
+            else:
+                return {'Is Error': True, 'Error Message': "Item No '{}' not found in Invoice No '{}'. Cannot Delete.".format(itemNo, receiptNo)}
 
-        return {'Is Error': False, 'Error Message': ""}
+            return {'Is Error': False, 'Error Message': ""}
