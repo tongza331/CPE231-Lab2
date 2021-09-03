@@ -32,7 +32,6 @@ from receipt import *
 #def report_customer_products_sold_total(invoices, products, customers, dateStart, dateEnd):
 #######################################################################
 
-#  Replace in main function 
 def main():
 #main function begins here
     try:
@@ -177,7 +176,8 @@ def main():
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 8560}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 1440}])
         create_receipt(receipts,'RCT1003/20','2020-02-06','CP','DC','Debit Card',20000,'This will later be deleted',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 10}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 20}])
-        create_receipt(receipts, "RCT1001/21", "2021-01-04", "CP", "DC", "KBTG card",9000, "-", [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 600}])
+        create_receipt(receipts, "RCT1001/21", "2021-01-04", "CP", "DC", "KBTG card",
+                       9000, "-", [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 600}])
         create_receipt(receipts, "RCT1002/21", "2021-01-05", "Sam", "CC", "pay ref", 10000, "rmark",
                        [{"Item No": 1, "Invoice No": "INT100/21", "Amount Paid Here": 8560},
                         {"Item No": 2, "Invoice No": "INT101/21", "Amount Paid Here": 900}])
@@ -202,6 +202,10 @@ def main():
         report_list_all_receipts()
         waitKeyPress("Results of updating 2 receipts: RCT1002/20 (successfully) and RCT1004/20 (unsuccessfully)")
 
+        # update receipt line item
+        update_receipt_line (receipts, "RCT1002/21", 2, "INT101/21",1000)
+        update_receipt_line(receipts, "RCT1004/21", 2, "INT101/21", 1500) #Cannot update line receipt 
+        waitKeyPress("Results of updating 2 receipts line item: RCT1002/21 (successfully) and RCT1004/20 (unsuccessfully)")
         #Report unpaid invoice 1
         report_unpaid_invoices()
         waitKeyPress("Report unpaid invoice 1")
@@ -213,7 +217,6 @@ def main():
         delete_receipt_line(receipts, "RCT1003/20", 2)
         # cannot delete INT1004/21 on item 2
         delete_receipt_line(receipts, "RCT1004/20", 2)
-        # delete receipt line item
         delete_receipt_line(receipts, "RCT1001/21", 1)
         delete_receipt_line(receipts, "RCT1003/21", 1)
         # cannot delete INT1003/21 on item 2

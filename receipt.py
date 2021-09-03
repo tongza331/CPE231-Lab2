@@ -2,6 +2,7 @@ from DBHelper import DBHelper
 from helper_functions import *
 from Product import *
 from Customer import *
+from Invoice import *
 
 class Receipt:
     def __init__(self):
@@ -91,17 +92,17 @@ class Receipt:
                               ' ')
         return row_as_dict(data, columns)
 
-    def update_receipt_line(self, receiptNo, receiptDate, fullamount, paidhere, receiptLineTuplesList):
+    def update_receipt_line(self, receiptNo, itemNo, newInvoiceNo, newAmountPaidHere):
         # The line item of this invoice number is updated for this product code.  
         # Note that the Product Total must also be recalculated, 
         #  after which all the related data in the invoice must be updated such as Total, VAT, and Amount Due. 
         # Returns dictionary {‘Is Error’: ___, ‘Error Message’: _____}. 
-        data, columns = self.db.fetch ("SELECT * FROM invoice_line_item WHERE invoice_no = '{}' AND item_no = '{}' ".format(receiptNo, itenNo))
+        data, columns = self.db.fetch ("SELECT * FROM receipt_line_item WHERE receipt_no = '{}' AND item_no = '{}' ".format(receiptNo, itemNo))
         if len(data) > 0:
-            self.db.execute ("UPDATE invoice_line_item SET quantity = {}, unit_price = '{}', product_total={}*{} WHERE invoice_no = '{}' AND product_code = '{}' ".format(newQuantity, newUnitPrice,newQuantity, newUnitPrice, invoiceNo, itenNo))
+            self.db.execute ("UPDATE receipt_line_item SET invoice_no = {}, amount_paid_here = '{}' WHERE receipt_no = '{}' AND item_no = '{}' ".format(newInvoiceNo, newAmountPaidHere,receiptNo, itemNo))
             self.__updateInvoiceTotal(receiptNo)
         else:
-            return {'Is Error': True, 'Error Message': "Item No '{}' not found in Invoice No '{}'. Cannot Update.".format(itenNo, receiptNo)}
+            return {'Is Error': True, 'Error Message': "Item No '{}' not found in Invoice No '{}'. Cannot Update.".format(itemNo, receiptNo)}
 
         return {'Is Error': False, 'Error Message': ""}
 
