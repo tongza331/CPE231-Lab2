@@ -259,8 +259,8 @@ def read_payment_method(payments, payment_method):
         print(result[1])
     return result #send result for caller program to use
 
-def update_payment_method(payments, newdescription):
-    result = payments.update(newdescription) #returns error dictionary
+def update_payment_method(payments, newPayment,newdescription):
+    result = payments.update(newPayment,newdescription) #returns error dictionary
     if result['Is Error']: #if error
         print(result['Error Message'])
     else:
@@ -280,29 +280,17 @@ def report_list_payment_method(payments):
     #printDictInCSVFormat(result, ('Code',), ('Name', 'Units'))
     print (result)
     return result #send result for caller program to use
-#รอพี่ เกิด error ตอนรัน
-"""def report_list_all_payment_method(payments):
-    result = payments.dump()
-    printDictInCSVFormat(result, ('payment_method',), ('description'))
-    return result #send result for caller program to use"""
 
 
 # function about Receipt
-def create_receipt(invoices, invoiceNo, invoiceDate, customerCode, dueDate, invoiceLineTuplesList):
-    if invoiceDate == None:
-        invoiceDate = 'null'
-    else:
-        invoiceDate = "'" + invoiceDate + "'"
-    if dueDate == None:
-        dueDate = 'null'
-    else:
-        dueDate = "'" + dueDate + "'"
-    result = invoices.create(invoiceNo, invoiceDate, customerCode, dueDate, invoiceLineTuplesList)#returns error dictionary
+def create_receipt(receipts, receiptNo, receiptDate, customerCode, paymentMethod, paymentReference, totalReceived, remark, receiptLineTuplesList):
+    result = receipts.create(receiptNo, receiptDate, customerCode, paymentMethod, paymentReference,totalReceived, remark, receiptLineTuplesList)  # returns error dictionary
     if result['Is Error']: #if error
         print(result['Error Message'])
     else:
-        print('Invoice Create Success.')
+        print('Receipt Create Success.')
     return result #send result for caller program to use
+
 
 def read_receipt(invoices, invoiceNo):
     result = invoices.read(invoiceNo) #returns tuple of (error dict, data dict)

@@ -152,8 +152,8 @@ def main():
         read_payment_method(paymentMethods, "DD")  # error
         print('--------------------------------------------------------------------')
         #correct the spelling error of "Intle":
-        update_payment_method(paymentMethods, newDescription="Debit Card",
-                              paymentMethodCode="DC")
+        update_payment_method(paymentMethods, newdescription="Debit Card",
+                              newPayment="DC")
         update_payment_method(paymentMethods, "CC", "Credit Card")
         print('--------------------------------------------------------------------')
         report_list_payment_method(paymentMethods)
@@ -170,9 +170,9 @@ def main():
         #Test receipt functions
         receipts = Receipt()
         #Create receipt
-        create_receipt(receipts, 'RCT1001/20', '2020-02-04', 'CP', 'DC', 'Debit Card', 10000, 'Paid all invoices partially',
+        create_receipt(receipts, "RCT1001/20", '2020-02-04', 'CP', 'DC', 'Debit Card', 10000, 'Paid all invoices partially',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 100}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 200}])
-        create_receipt(receipts, 'RCT1002/20', '2020-02-05', 'Sam', 'CC', 'Master Card, Citibank', 15000,'Partially paid on INT101/20',
+        create_receipt(receipts, "RCT1002/20", '2020-02-05', 'Sam', 'CC', 'Master Card, Citibank', 15000,'Partially paid on INT101/20',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 8560}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 1440}])
         create_receipt(receipts,'RCT1003/20','2020-02-06','CP','DC','Debit Card',20000,'This will later be deleted',
                        [{"Item No": 1, 'Invoice No': 'INT100/20', 'Amount Paid Here': 10}, {"Item No": 2, 'Invoice No': 'INT101/20', 'Amount Paid Here': 20}])

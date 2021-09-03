@@ -19,27 +19,23 @@ class Receipt:
     def __updateLineItem (self, receiptNo, receiptLineTuplesList):
         self.db.execute ("DELETE FROM receipt_line_item WHERE receipt_no = '{}' ".format(receiptNo))
         for lineItem in receiptLineTuplesList:
-            self.db.execute ("INSERT INTO invoice_line_item (receipt_no, item_no, invoice_no, amount_paid_here) VALUES ('{}',{},'{}','{}')".format(receiptNo, lineItem['Item No'], lineItem['Invoice No'], lineItem['Amount Paid Here']))
+            self.db.execute ("INSERT INTO receipt_line_item (receipt_no, item_no, invoice_no, amount_paid_here) VALUES ('{}',{},'{}','{}')".format(receiptNo, lineItem['Item No'], lineItem['Invoice No'], lineItem['Amount Paid Here']))
         self.__updateInvoiceTotal(receiptNo)
 
-    def create(self, receiptNo, receiptDate, customerCode, PaymentMethod, PaymentReference, TotalReceived, Remarks, receiptLineTuplesList):
+    def create(self, receiptNo, receiptDate, customerCode, paymentMethod, paymentReference, totalReceived ,remarks, receiptLineTuplesList):
         # Adds the new invoice record to invoices object (dictionary).
         # Note that the function will calculate Total, VAT, and Amount Due
         #  from the data in the invoiceLineDictList parameter.  
         # The invoiceLineDictList data will be a list of dictionary,
         #  where each dictionary item of the list is in this example
         #  format: {'Product Code': 'HD01',  'Quantity': 2,  'Unit Price': 3000.00}.  
-        # Note that for each line item the Price Total will be calculated by the function using Quantity * Unit Price. 
+        # Note that for each line item the Extended Price will be calculated by the function using Quantity * Unit Price. 
         # Returns dictionary {‘Is Error’: ___, ‘Error Message’: _____}.
 
         data, columns = self.db.fetch ("SELECT * FROM receipt WHERE receipt_no = '{}' ".format(receiptNo))
         if len(data) > 0:
             return {'Is Error': True, 'Error Message': "Receipt No '{}' already exists. Cannot Create. ".format(receiptNo)}
-        else:
-            self.db.execute ("INSERT INTO receipt (receipt_no, date, customer_code, payment_method, payment_reference, total_recived,remarks) VALUES ('{}' ,'{}','{}','{}','{}','{}','{}')".format(receiptNo, receiptDate, customerCode, PaymentMethod, PaymentReference, TotalReceived, Remarks))
-            self.__updateLineItem(receiptNo, receiptLineTuplesList)
 
-        return {'Is Error': False, 'Error Message': ""}
 
     def read(self, receiptNo):
         # Finds the invoice number in invoices object and returns 1invoice  record in dictionary form. 

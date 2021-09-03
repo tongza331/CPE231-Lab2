@@ -30,15 +30,15 @@ class payment_method:
 
         return ({'Is Error': False, 'Error Message': ""},retpayment_method)
 
-    def update(self, payment_method, newdescription):
+    def update(self, newPayment, newdescription):
         # Finds the customer code in customers object and then changes the values to the new ones. 
         # Returns dictionary {"Is Error": ___, "Error Message": _____}.
 
-        data, columns = self.db.fetch ("SELECT * FROM payment_method WHERE payment_method = '{}' ".format(payment_method))
+        data, columns = self.db.fetch ("SELECT * FROM payment_method WHERE payment_method = '{}' ".format(newPayment))
         if len(data) > 0:
-            self.db.execute ("UPDATE payment_method SET description='{}' WHERE payment_method='{}' ".format(newdescription,payment_method))
+            self.db.execute ("UPDATE payment_method SET description='{}' WHERE payment_method='{}' ".format(newdescription,newPayment))
         else:
-            return {'Is Error': True, 'Error Message': "payment_method '{}' not found. Cannot Update.".format(payment_method)}
+            return {'Is Error': True, 'Error Message': "payment_method '{}' not found. Cannot Update.".format(newPayment)}
 
         return {'Is Error': False, 'Error Message': ""}
 
