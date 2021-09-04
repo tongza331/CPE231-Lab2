@@ -86,12 +86,12 @@ class Receipt:
                               ' , r.customer_code as "Customer Code", r.payment_method as "Payment Method" '
                               ' , r.payment_reference as "Payment Reference" ,r.total_receipt as "Total receipt"'
                               ' , r.remarks as "Remarks", rli.receipt_no as "Receipt No",rli.item_no as "Item No" '
-                              ' , rli.invoice_no as "Invoice No", rli.invoice_date as "Invoice Date", rli.invoice_full_amount as "Invoice Full Amount" '
+                              ' , rli.invoice_no as "Invoice No", i.invoice_date as "Invoice Date", i.amount_due as "Invoice Full Amount" '
                               ' , rli.invoice_amount_remain as "Invoice Amount Remain", rli.amount_paid_here as "Amount piad here" '
                               ' , ili.invoice_no as "Invoice No" '
-                              ' FROM receipt r JOIN customer c ON r.customer_code = c.customer_code '
+                              '  FROM receipt r JOIN customer c ON r.customer_code = c.customer_code '
                               '  JOIN receipt_line_item rli ON r.receipt_no = rli.receipt_no '
-                              '  JOIN invoice_line_item ili ON rli.invoice_no = ili.invoice_no '
+                              '  JOIN invoice i ON rli.invoice_no = i.invoice_no '
                               ' ')
         return row_as_dict(data, columns)
 
