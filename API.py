@@ -347,7 +347,7 @@ def report_list_all_receipts():
     # A helper function such as def print_tabular_dictionary(tabularDictionary) can then be called to print this in a tabular (table-like) form with column headings and data. 
 
     db = DBHelper()
-    data, columns = db.fetch ('SELECT r.receipt_no as "Receipt No" '
+    data, columns = db.fetch ('SELECT 0 as "Footer", r.receipt_no as "Receipt No" '
                                 ', i.date as "Date" '
                                 ', c.customer_code as "Customer Code"'
                                 ', c.name as "Customer Name"'
@@ -355,22 +355,25 @@ def report_list_all_receipts():
                                 ', r.total_receipt as "Total Receipt" '
                                 ', r.payment_reference as "Payment Reference"'
                                 ', r.remarks as "Remarks"'
-                                'FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
+                                ', rli.invoice_no as "Invoice No"'
+                                ', rli.amount_paid_here as "Amount Paid Here"'
+                                ' FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
                                 ' JOIN customer c ON r.customer_code = c.customer_code'
                                 ' JOIN payment_method p ON r.payment_method = p.payment_method' 
-                                ' JOIN invoice i ON i.invoice_no = rli.invoice_no ')
-    result = row_as_dict(data, columns)
-    data, columns = db.fetch ('SELECT rli.invoice_no as "Invoice No" '
+                                ' JOIN invoice i ON i.invoice_no = rli.invoice_no ' )
+    result = row_as_dict(data, columns)    
+    data2, columns2 = db.fetch ('SELECT 0 as "Footer", rli.invoice_no as "Invoice No" '
                                 ', i.date as "Invoice Date" '
                                 ', i.amount_due as "Invoice Full Amount" '
                                 ', rli.amount_paid_here as "Amount Paid Here"'
-                                'FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
-                                ' JOIN invoice i ON i.invoice_no = rli.invoice_no ' )
-    result2 = row_as_dict(data, columns)
+                                ' FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
+                                ' JOIN invoice i ON i.invoice_no = rli.invoice_no ')                 
+    result2 = row_as_dict(data2, columns2)
 
-    printDictInCSVFormat(result, ('Receipt No',), ('Date', 'Customer Code', 'Customer Name', 'Payment Name', 'Total Receipt', 'Payment Reference', 'Remarks'))
-    printDictInCSVFormat(result2, ('Invoice No',), ('Invoice Date', 'Invoice Full Amount', 'Amount Paid Here'))
-    return result, result2 #send result for caller program to use
+    printDictInCSVFormat(result, (None), ('Receipt No','Date', 'Customer Code', 'Customer Name', 'Payment Name', 'Total Receipt', 'Payment Reference', 'Remarks'))
+    printDictInCSVFormat(result2, (None), ('Invoice No','Invoice Date', 'Invoice Full Amount', 'Amount Paid Here'))
+    return result, result2 #send result for caller program to use 
+  
 
 def report_unpaid_invoices():
     db = DBHelper()
@@ -379,12 +382,22 @@ def report_unpaid_invoices():
                              '   r.customer_code as "Customer Code" ,'
                              '   c.name as "Customer Name" ,'
                              '   i.amount_due as "Amount Due", '
-                             '   SUM(i.amount_due) - SUM(rli.amount_paid_here) as "Amount Unpaid",'
+                             '   i.amount_due - SUM(rli.amount_paid_here) as "Amount Unpaid",'
                              '   rli.amount_paid_here as "Amount Paid Here"  '
                              '   FROM invoice i JOIN receipt_line_item rli ON i.invoice_no = rli.invoice_no '
                              '   JOIN receipt r ON r.receipt_no = rli.receipt_no '
                              '   JOIN customer c ON c.customer_code = r.customer_code '
                              '   GROUP BY i.invoice_no,r.customer_code,c.name,rli.amount_paid_here ' )
     result = row_as_dict(data, columns)
+    data, columns = db.fetch('SELECT 0 as "Footer",SUM(unpaid) as "Total Invoice Amount Not Paid" , SUM("Amount Paid Here") as "Total Invoice Amount Received"'
+                            ' FROM (SELECT rli.invoice_no as "Invoice No", i.date as "Invoice Date", c.name as "Customer Name" ,'
+                            ' i.amount_due as "Amount Received", SUM(rli.amount_paid_here) as "Amount Paid Here", '
+                            ' (i.amount_due - sum(rli.amount_paid_here)) as "unpaid" '
+                            ' FROM receipt r JOIN receipt_line_item rli ON r.receipt_no = rli.receipt_no'
+                            ' JOIN invoice i ON i.invoice_no = rli.invoice_no '
+                            ' JOIN customer c ON c.customer_code = i.customer_code '
+                            ' GROUP BY rli.invoice_no ,i.date, c.name,i.amount_due) as total_un_re;')
+    result2 = row_as_dict(data, columns)
     printDictInCSVFormat(result, ('Invoice No',), ('Date', 'Customer Code', 'Customer Name', 'Amount Due', 'Amount Unpaid', 'Amount Paid Here'))
+    printDictInCSVFormat(result2, (None), ('Total Invoice Amount Not Paid', 'Total Invoice Amount Received'))
     return result
