@@ -218,7 +218,7 @@ def report_customer_products_sold_list(invoices, products, customers, dateStart,
 
 def report_customer_products_sold_total(invoices, products, customers, dateStart, dateEnd):
     # Will return 2 dictionaries: 
-    # 1) a dictionary as list customers and the total number and value of products sold to them in the given date range in this format:  Customer Code, Customer Name, Product Code,  Product Name, Total Quantity Sold, Total Value Sold. Here (customer code, product code) will be unique.
+    # 1) a dictionary as list customers and the total number and value of products sold to them in the given date range in this format:  Customer Code, Cus                                                                 tomer Name, Product Code,  Product Name, Total Quantity Sold, Total Value Sold. Here (customer code, product code) will be unique.
     # And 2) a second footer dictionary showing: t the end also show the sum of Total Quantity Sold, sum of Total Value Sold.
     db = DBHelper()
     data, columns = db.fetch ('SELECT i.customer_code, c.customer_code as "Customer Code", c.name as "Customer Name" '
@@ -347,38 +347,36 @@ def report_list_all_receipts():
     # A helper function such as def print_tabular_dictionary(tabularDictionary) can then be called to print this in a tabular (table-like) form with column headings and data. 
 
     db = DBHelper()
-    data, columns = db.fetch ('SELECT 0 as "Footer", r.receipt_no as "Receipt No" '
-                                ', i.date as "Date" '
+    data, columns = db.fetch ('SELECT r.receipt_no as "Receipt No"'
+                                ', r.date as "Date" '
                                 ', c.customer_code as "Customer Code"'
                                 ', c.name as "Customer Name"'
                                 ', p.description as "Payment Name"'
                                 ', r.total_receipt as "Total Receipt" '
                                 ', r.payment_reference as "Payment Reference"'
                                 ', r.remarks as "Remarks"'
-                                ', rli.invoice_no as "Invoice No"'
-                                ', rli.amount_paid_here as "Amount Paid Here"'
-                                ' FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
+                                'FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
                                 ' JOIN customer c ON r.customer_code = c.customer_code'
                                 ' JOIN payment_method p ON r.payment_method = p.payment_method' 
-                                ' JOIN invoice i ON i.invoice_no = rli.invoice_no ' )
-    result = row_as_dict(data, columns)    
-    data2, columns2 = db.fetch ('SELECT 0 as "Footer", rli.invoice_no as "Invoice No" '
+                                ' GROUP BY  r.receipt_no, r.date, c.customer_code, c.name, p.description, r.total_receipt, r.payment_reference, r.remarks, rli.receipt_no')
+    result = row_as_dict(data, columns)
+    data, columns = db.fetch ('SELECT rli.invoice_no as "Invoice No" '
                                 ', i.date as "Invoice Date" '
                                 ', i.amount_due as "Invoice Full Amount" '
                                 ', rli.amount_paid_here as "Amount Paid Here"'
-                                ' FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
-                                ' JOIN invoice i ON i.invoice_no = rli.invoice_no ')                 
-    result2 = row_as_dict(data2, columns2)
+                                'FROM receipt r JOIN receipt_line_item rli ON r.receipt_no =  rli.receipt_no '
+                                ' JOIN invoice i ON i.invoice_no = rli.invoice_no' )
+    result2 = row_as_dict(data, columns)
 
-    printDictInCSVFormat(result, (None), ('Receipt No','Date', 'Customer Code', 'Customer Name', 'Payment Name', 'Total Receipt', 'Payment Reference', 'Remarks'))
-    printDictInCSVFormat(result2, (None), ('Invoice No','Invoice Date', 'Invoice Full Amount', 'Amount Paid Here'))
-    return result, result2 #send result for caller program to use 
-  
+    printDictInCSVFormat(result, ('Receipt No',), ('Date', 'Customer Code', 'Customer Name', 'Payment Name', 'Total Receipt', 'Payment Reference', 'Remarks'))
+    printDictInCSVFormat(result2, ('Invoice No',), ('Invoice Date', 'Invoice Full Amount', 'Amount Paid Here'))
+    return result, result2 #send result for caller program to use
+
 
 def report_unpaid_invoices():
     db = DBHelper()
     data, columns = db.fetch('SELECT i.invoice_no as "Inoivce No" ,'
-                             ' i.date as "Date" ,'
+                             '   i.date as "Date" ,'
                              '   r.customer_code as "Customer Code" ,'
                              '   c.name as "Customer Name" ,'
                              '   i.amount_due as "Amount Due", '
@@ -396,7 +394,7 @@ def report_unpaid_invoices():
                             ' FROM receipt r JOIN receipt_line_item rli ON r.receipt_no = rli.receipt_no'
                             ' JOIN invoice i ON i.invoice_no = rli.invoice_no '
                             ' JOIN customer c ON c.customer_code = i.customer_code '
-                            ' GROUP BY rli.invoice_no ,i.date, c.name,i.amount_due) as total_un_re;')
+                            ' GROUP BY rli.invoice_no ,i.date, c.name,i.amount_due) as total;')
     result2 = row_as_dict(data, columns)
     printDictInCSVFormat(result, ('Invoice No',), ('Date', 'Customer Code', 'Customer Name', 'Amount Due', 'Amount Unpaid', 'Amount Paid Here'))
     printDictInCSVFormat(result2, (None), ('Total Invoice Amount Not Paid', 'Total Invoice Amount Received'))
